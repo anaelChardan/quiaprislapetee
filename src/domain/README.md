@@ -1,0 +1,1 @@
+The domain is matching the API of BGG as much as possible

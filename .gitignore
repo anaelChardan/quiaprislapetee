@@ -1,0 +1,17 @@
+
+.DS_Store
+
+coverage
+node_modules
+out
+dist
+public
+requests/production.http
+scripts/personal
+.idea
+.env
+.env.test
+config/local.json
+
+documentation/typedoc
+personal

@@ -1,0 +1,115 @@
+{
+  "name": "quiaprislapetee",
+  "version": "1.0.0",
+  "description": "Board Game Plays Log",
+  "main": "index.js",
+  "scripts": {
+    "@comment tools": "---------------------------------------------------",
+    "checkdotenv": "tsx ./scripts/check-dotenv.ts",
+    "bootstrap": "node ./dist/src/bootstrap.js",
+    "generate-openapi": "tsx ./scripts/generate-openapi.ts",
+    "@comment build": "---------------------------------------------------",
+    "build": "tsc && tsc-alias",
+    "postbuild": "shx cp -R ./config ./dist",
+    "dev": "NODE_ENV=dev tsx --env-file=.env --watch src/index.ts",
+    "prestart": "npm run bootstrap",
+    "start": "node --env-file=.env --require source-map-support/register-hook-require ./dist/src/index.js",
+    "@comment test": "---------------------------------------------------",
+    "test": "TZ=Etc/UTC NODE_ENV=test node --env-file=.env.test -- ./node_modules/.bin/jest --verbose --selectProjects unit-tests",
+    "pretest:all": "npm run pretest",
+    "test:all": "TZ=Etc/UTC NODE_ENV=test node --env-file=.env.test -- ./node_modules/.bin/jest --verbose",
+    "pretest:service": "npm run pretest",
+    "test:service": "TZ=Etc/UTC NODE_ENV=test node --env-file=.env.test -- ./node_modules/.bin/jest --verbose --selectProjects service-tests",
+    "test:coverage": "npm t && open coverage/lcov-report/index.html",
+    "@commented-pretest": "NODE_ENV=test node --env-file=.env.test -- ./node_modules/.bin/prisma migrate deploy",
+    "@commanded-posttest": "NODE_ENV=test tsx --env-file=.env.test ./src/__tests__/utils/post-test.ts",
+    "posttest:service": "NODE_ENV=test tsx --env-file=.env.test ./src/__tests__/utils/post-service-test.ts",
+    "@comment linting": "-------------------------------------------------",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier:fix": "prettier --write .",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged",
+    "check-types": "tsc --noEmit",
+    "@comment database": "-------------------------------------------------"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anaelChardan/quiaprislapetee.git"
+  },
+  "keywords": [
+    "BoardGames"
+  ],
+  "author": "anaelChardan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anaelChardan/quiaprislapetee/issues"
+  },
+  "homepage": "https://github.com/anaelChardan/quiaprislapetee#readme",
+  "dependencies": {
+    "@effect/platform": "^0.53.8",
+    "@fastify/awilix": "^5.1.0",
+    "@fastify/swagger": "8.14.0",
+    "@fastify/swagger-ui": "3.0.0",
+    "awilix": "^10.0.2",
+    "cls-hooked": "4.2.2",
+    "config": "3.3.11",
+    "dd-trace": "5.5.0",
+    "effect": "^3.1.5",
+    "fastify": "^4.27.0",
+    "fastify-metrics": "10.6.0",
+    "fastify-plugin": "4.5.1",
+    "fastify-type-provider-zod": "1.1.9",
+    "pino": "^8.16.2",
+    "pino-pretty": "^10.2.3",
+    "source-map-support": "^0.5.21",
+    "undici": "6.7.0",
+    "zod": "3.23.3"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "8.4.1",
+    "@swc/core": "1.4.8",
+    "@swc/helpers": "0.5.7",
+    "@swc/jest": "0.2.36",
+    "@types/cls-hooked": "4.3.4",
+    "@types/config": "3.3.3",
+    "@types/jest": "29.5.12",
+    "@types/node": "^20.12.10",
+    "@types/supertest": "6.0.2",
+    "@typescript-eslint/eslint-plugin": "5.58.0",
+    "@typescript-eslint/parser": "5.58.0",
+    "eslint": "8.38.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-airbnb-typescript": "17.0.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-prettier": "4.2.1",
+    "husky": "9.0.11",
+    "jest": "29.7.0",
+    "jest-environment-node": "29.7.0",
+    "jest-mock-extended": "^3.0.5",
+    "lint-staged": "15.2.2",
+    "prettier": "3.2.5",
+    "shx": "0.3.4",
+    "supertest": "6.3.4",
+    "ts-jest": "29.1.2",
+    "tsc-alias": "1.8.8",
+    "tsconfig-paths": "4.2.0",
+    "tsconfig-paths-jest": "0.0.1",
+    "tsx": "4.7.1",
+    "typescript": "^5.4.5"
+  },
+  "volta": {
+    "node": "20.12.0",
+    "npm": "10.5.0"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
+  }
+}

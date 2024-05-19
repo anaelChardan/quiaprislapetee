@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Create database for qui-a-pris-la-petee if it doesn't exist
+echo "🕑 Ensuring databases exist for qui-a-pris-la-petee"
+echo "✅ Databases created"
+
+echo "🕑 Installing node dependencies"
+npm install || exit 1
+echo "✅ Node dependencies installed"
+
+# Create the .env file from the example file if it doesn't already exist
+npm run checkdotenv;
+
+echo "🕑 Building"
+
+npm run build || exit 1
+echo "✅ Done"
+

@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+documentation
+.idea
+.github
+**/__tests__

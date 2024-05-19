@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "quiaprislapetee",
+    "env": "dev",
+    "port": 3000,
+    "host": "0.0.0.0"
+  },
+  "cors": {
+    "swaggerUi": {
+      "allowOrigin": "*"
+    }
+  },
+  "logger": {
+    "transportType": "console",
+    "humanReadable": true,
+    "minimumLoggingLevel": "info"
+  }
+}
