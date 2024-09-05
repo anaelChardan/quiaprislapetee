@@ -46,12 +46,38 @@ module.exports = {
     {
       ...baseConfig,
       displayName: 'unit-tests',
-      testMatch: ['<rootDir>/src/__tests__/unit/**/*.test.ts'],
+      testMatch: ['<rootDir>/src/**/*.unit.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
+      globals: {
+        TEST_ENV: 'unit',
+      },
     },
     {
       ...baseConfig,
       displayName: 'service-tests',
-      testMatch: ['<rootDir>/src/__tests__/service/**/*.test.ts'],
+      testMatch: ['<rootDir>/src/**/*.service.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
+      globals: {
+        TEST_ENV: 'service',
+      },
+    },
+    {
+      ...baseConfig,
+      displayName: 'acceptance-tests',
+      testMatch: ['<rootDir>/src/**/*.acceptance.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
+      globals: {
+        TEST_ENV: 'acceptance',
+      },
+    },
+    {
+      ...baseConfig,
+      displayName: 'integration-tests',
+      testMatch: ['<rootDir>/src/**/*.integration.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
+      globals: {
+        TEST_ENV: 'integration',
+      },
     },
   ],
 };

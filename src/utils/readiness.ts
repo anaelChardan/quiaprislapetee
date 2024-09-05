@@ -1,11 +1,12 @@
 import loggerModule from '@utils/logger';
-// import prisma from '@db-client';
+import { container } from '../container';
 
 const { logger } = loggerModule;
 
 const isReady = async () => {
   try {
-    // await prisma.$queryRaw`SELECT 1`;
+    const { mongoDbClient } = container.cradle;
+    await mongoDbClient.ping();
   } catch (error: unknown) {
     logger.error('Error while connecting to the database', { error });
     return false;

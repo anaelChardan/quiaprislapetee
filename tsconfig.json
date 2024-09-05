@@ -17,6 +17,8 @@
       "@lib/*": ["./src/libraries/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
       "@utils/*": ["./src/utils/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@application/*": ["./src/application/*"],
       "@presentation/*": ["./src/presentation/*"],
       "@fixtures/*": ["./src/__tests__/fixtures/*"],
       "@test-utils/*": ["./src/__tests__/utils/*"]

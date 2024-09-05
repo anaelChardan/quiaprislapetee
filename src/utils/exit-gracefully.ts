@@ -1,5 +1,5 @@
-// import prisma from '@db-client';
 import loggerModule from '@utils/logger';
+import { container } from '../container';
 
 const { logger } = loggerModule;
 
@@ -9,7 +9,7 @@ type CloseableServer = {
 
 async function shutdownDependencies(server: CloseableServer) {
   const dependencies = new Map<string, () => Promise<void>>([['server', server.close]]);
-  // dependencies.set('prisma', prisma.$disconnect);
+  dependencies.set('mongo', container.cradle.mongoDbClient.close);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const [name, shutdown] of dependencies) {

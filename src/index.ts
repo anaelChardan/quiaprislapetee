@@ -18,8 +18,8 @@ const { logger } = loggerModule;
 // Setup server
 (async () => {
   try {
-    setupContainer();
-    // await prisma.$connect();
+    const container = setupContainer();
+    await container.cradle.mongoDbClient.db();
   } catch (error: unknown) {
     logger.error('Error while connecting to the database', { error });
     process.exit(1);

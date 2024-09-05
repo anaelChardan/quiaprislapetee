@@ -1,0 +1,27 @@
+import {assertFailure, assertSuccess} from '@utils/general-type-helpers/node'
+import { something } from "../somewhere";
+
+describe('some test', () => {
+  const someValue = {};
+
+  beforeAll(async () => {
+    doSomething();
+  });
+
+  afterAll(async () => {
+    doSomething();
+  });
+
+  beforeEach(async () => {
+    doSomething();
+  });
+
+  afterEach(async () => {
+    doSomething();
+  });
+
+  it('should do something', () => {
+    assertSuccess(someValue);
+    assertFailure(someValue);
+  });
+});

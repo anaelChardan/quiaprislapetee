@@ -1,0 +1,1 @@
+export { httpMock } from './http';
