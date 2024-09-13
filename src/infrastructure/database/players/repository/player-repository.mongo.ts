@@ -80,7 +80,7 @@ export class MongoPlayersRepository implements PlayersRepository {
   async upsert(player: Player): ReturnType<PlayersRepository['upsert']> {
     try {
       await this.mongoRepository.upsert(player);
-      return R.toSuccess({ id: player._id });
+      return R.toSuccess({ _id: player._id });
     } catch (error) {
       return R.toFailure({ error });
     }

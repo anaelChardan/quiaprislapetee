@@ -1,7 +1,8 @@
-import { type Result } from '@utils/general-type-helpers/Result';
-import { Boardgame, BoardgameId } from './aggregate';
+import { type DomainRepository } from '@utils/abstractions/domain-repository';
+import { type Boardgame } from './aggregate';
 
 export interface BoardgamesRepository {
-  save(boardgame: Boardgame): Promise<Result<{ error: unknown }, { id: BoardgameId }>>;
-  exists(boardgameId: BoardgameId): Promise<Result<{ error: unknown }, boolean>>;
+  save: DomainRepository<Boardgame['_id'], Boardgame>['save'];
+  upsert: DomainRepository<Boardgame['_id'], Boardgame>['upsert'];
+  exists: DomainRepository<Boardgame['_id'], Boardgame>['exists'];
 }

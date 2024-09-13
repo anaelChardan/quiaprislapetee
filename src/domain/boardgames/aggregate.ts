@@ -15,6 +15,7 @@ export const newBoardGameName = Brand.refined<BoardgameName>(
 );
 
 export type Boardgame = {
-  id: BoardgameId;
+  _id: BoardgameId;
   name: BoardgameName;
+  bggThingId: string | undefined;
 };

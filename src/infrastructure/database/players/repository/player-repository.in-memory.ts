@@ -1,65 +1,30 @@
-import * as R from '@utils/general-type-helpers/Result';
 import { type PlayerId, type Player, type PlayersRepository } from '@domain/players';
-import { inMemoryDatabase } from '../../in-memory-database';
+import { createInMemoryRepository } from '@utils/abstractions/inMemoryRepository';
 
 export class InMemoryPlayersRepository implements PlayersRepository {
-  // eslint-disable-next-line class-methods-use-this
+  private inMemoryRepository = createInMemoryRepository('players');
+
   async exists(playerId: PlayerId): ReturnType<PlayersRepository['exists']> {
-    const exists = inMemoryDatabase.players.some((player) => player._id === playerId);
-
-    return R.toSuccess(exists);
+    return this.inMemoryRepository.exists(playerId);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async allExists(playerIds: PlayerId[]): ReturnType<PlayersRepository['exists']> {
-    const notExisting = playerIds.filter(
-      (playerId) => !inMemoryDatabase.players.some((player) => player._id === playerId),
-    );
-
-    return R.toSuccess(notExisting.length === 0);
+    return this.inMemoryRepository.allExists(playerIds);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async findOneById(playerId: PlayerId): ReturnType<PlayersRepository['findOneById']> {
-    const player = inMemoryDatabase.players.find((p) => p._id === playerId);
-
-    if (!player) {
-      return R.toFailure({ error: 'Player not found' });
-    }
-
-    return R.toSuccess(player);
+    return this.inMemoryRepository.findOneById(playerId);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async save(player: Player): ReturnType<PlayersRepository['save']> {
-    inMemoryDatabase.players.push(player);
-
-    return R.toSuccess({ id: player._id });
+    return this.inMemoryRepository.save(player);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async upsert(player: Player): ReturnType<PlayersRepository['upsert']> {
-    inMemoryDatabase.players = [
-      ...inMemoryDatabase.players.filter((p) => p._id !== player._id),
-      player,
-    ];
-
-    return R.toSuccess({ id: player._id });
+    return this.inMemoryRepository.upsert(player);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async bulkUpsert(players: Player[]): ReturnType<PlayersRepository['bulkUpsert']> {
-    const results: Awaited<ReturnType<PlayersRepository['upsert']>>[] = [];
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const player of players) {
-      // eslint-disable-next-line no-await-in-loop
-      const result = await this.upsert(player);
-      results.push(result);
-    }
-
-    const r = R.sequenceResults(results);
-
-    return R.mapError(r, (error) => ({ error }));
+    return this.inMemoryRepository.bulkUpsert(players);
   }
 }

@@ -63,11 +63,20 @@ module.exports = {
     },
     {
       ...baseConfig,
-      displayName: 'acceptance-tests',
+      displayName: 'acceptance-tests-in-memory',
       testMatch: ['<rootDir>/src/**/*.acceptance.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
       globals: {
-        TEST_ENV: 'acceptance',
+        TEST_ENV: 'acceptance-in-memory',
+      },
+    },
+    {
+      ...baseConfig,
+      displayName: 'acceptance-tests-prod-ready',
+      testMatch: ['<rootDir>/src/**/*.acceptance.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
+      globals: {
+        TEST_ENV: 'acceptance-prod-ready',
       },
     },
     {

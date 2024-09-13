@@ -80,7 +80,7 @@ export class CreatePlayCommandHandler {
       }
 
       const play = {
-        id: newPlayId(command.payload.id),
+        _id: newPlayId(command.payload.id),
         boardgame: boardGameId,
         partyOwner: ownerId,
         players: command.payload.players,
@@ -88,7 +88,11 @@ export class CreatePlayCommandHandler {
 
       const result = await this.playsRepository.save(play);
 
-      return result;
+      return R.bimap(
+        result,
+        (e) => ({ reason: e.error }),
+        (s) => ({ id: s._id }),
+      );
     }
 
     return R.toFailure({

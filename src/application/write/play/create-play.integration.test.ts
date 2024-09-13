@@ -1,8 +1,7 @@
 import * as R from '@utils/general-type-helpers/Result';
 import { generatePlayerId, newPseudo, PlayerId } from '@domain/players';
 import { BoardgameId } from '@domain/boardgames';
-import { container, setupContainer } from '../../../container';
-import { createDummyBoardgame, createDummyPlayer } from '../../../__tests__/dummy';
+import { setupContainer } from '../../../container';
 import { CreatePlayCommandHandler } from './create-play';
 
 describe('plays', () => {
@@ -13,21 +12,21 @@ describe('plays', () => {
   let nanouId: PlayerId;
 
   beforeAll(async () => {
-    setupContainer();
+    const container = setupContainer();
     createPlayCommandHandler = container.cradle.createPlayCommandHandler;
 
-    boardgameId = await createDummyBoardgame();
+    boardgameId = await container.cradle.dummyBoardgame.randomOne({});
 
     popeyeId = generatePlayerId();
     nanouId = generatePlayerId();
 
-    await createDummyPlayer({
+    await container.cradle.dummyPlayer.randomOne({
       _id: popeyeId,
       pseudo: newPseudo('popeye'),
       friends: [],
     });
 
-    await createDummyPlayer({
+    await container.cradle.dummyPlayer.randomOne({
       _id: nanouId,
       pseudo: newPseudo('nanou'),
       friends: [],

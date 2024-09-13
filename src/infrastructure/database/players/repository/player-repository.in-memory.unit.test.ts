@@ -1,15 +1,28 @@
 import * as R from '@utils/general-type-helpers/Result';
-import { generatePlayerId, newPlayerId, newPseudo, PlayersRepository } from '@domain/players';
+import {
+  generatePlayerId,
+  newPlayerId,
+  newPseudo,
+  Player,
+  PlayersRepository,
+} from '@domain/players';
 import { faker } from '@faker-js/faker';
-import { container, setupContainer } from '../../../../container';
-import { saveRandomDummyPlayers } from '../../../../__tests__/dummy';
+import { AppContainer, setupContainer } from '../../../../container';
+import { DummyCreator } from '../../../../__tests__/dummy/type';
 
 describe('InMemoryPlayersRepository', () => {
   let playersRepository: PlayersRepository;
+  let container: AppContainer;
+  let dummyPlayer: DummyCreator<Player>;
   beforeAll(async () => {
-    setupContainer();
-    const { playersRepository: playersRepositoryFromContainer } = container.cradle;
+    container = setupContainer();
+    const {
+      playersRepository: playersRepositoryFromContainer,
+      dummyPlayer: dummyPlayerFromContainer,
+    } = container.cradle;
+
     playersRepository = playersRepositoryFromContainer;
+    dummyPlayer = dummyPlayerFromContainer;
   });
 
   it('can create a player', async () => {
@@ -25,13 +38,13 @@ describe('InMemoryPlayersRepository', () => {
       friends: [],
     });
 
-    expect(player).toEqual(R.toSuccess({ id }));
+    expect(player).toEqual(R.toSuccess({ _id: id }));
     const existsAfter = await playersRepository.exists(newPlayerId(id));
     expect(existsAfter).toEqual(R.toSuccess(true));
   });
 
   it('check that multiple players exists', async () => {
-    const ids = await saveRandomDummyPlayers(3);
+    const ids = await dummyPlayer.randoms(3);
     const playerExists = await playersRepository.allExists(ids);
     expect(playerExists).toEqual(R.toSuccess(true));
 

@@ -1,5 +1,5 @@
 import loggerModule from '@utils/logger';
-import { container } from '../container';
+import { type AppContainer } from '../container';
 
 const { logger } = loggerModule;
 
@@ -7,7 +7,7 @@ type CloseableServer = {
   close: () => Promise<void>;
 };
 
-async function shutdownDependencies(server: CloseableServer) {
+async function shutdownDependencies(server: CloseableServer, container: AppContainer) {
   const dependencies = new Map<string, () => Promise<void>>([['server', server.close]]);
   dependencies.set('mongo', container.cradle.mongoDbClient.close);
 
@@ -23,6 +23,7 @@ async function shutdownDependencies(server: CloseableServer) {
 export async function exitGracefully(
   server: CloseableServer,
   eventName: NodeJS.Signals | 'uncaughtException' | 'unhandledRejection',
+  container: AppContainer,
   exitCode: number,
   error?: Error,
   reason?: unknown,
@@ -43,5 +44,5 @@ export async function exitGracefully(
     exitCode,
   });
 
-  await shutdownDependencies(server);
+  await shutdownDependencies(server, container);
 }

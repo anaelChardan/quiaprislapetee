@@ -1,13 +1,13 @@
 import * as R from '@utils/general-type-helpers/Result';
 import { generatePlayerId, newPlayerId, newPseudo, PlayersRepository } from '@domain/players';
 import { faker } from '@faker-js/faker';
-import { container, setupContainer } from '../../../../container';
-import { saveRandomDummyPlayers } from '../../../../__tests__/dummy';
+import { AppContainer, setupContainer } from '../../../../container';
 
 describe('MongoDbPlayersRepository', () => {
   let playersRepository: PlayersRepository;
+  let container: AppContainer;
   beforeAll(async () => {
-    setupContainer();
+    container = setupContainer();
     const { mongoDbClient, playersRepository: playersRepositoryFromContainer } = container.cradle;
     await mongoDbClient.ping();
     playersRepository = playersRepositoryFromContainer;
@@ -37,7 +37,7 @@ describe('MongoDbPlayersRepository', () => {
   });
 
   it('check that multiple players exists', async () => {
-    const ids = await saveRandomDummyPlayers(3);
+    const ids = await container.cradle.dummyPlayer.randoms(3);
     const playerExists = await playersRepository.allExists(ids);
     expect(playerExists).toEqual(R.toSuccess(true));
 

@@ -5,13 +5,15 @@ import * as z from 'zod';
 import { standardResponseSchema } from '../../schemas/response';
 
 export default async (app: FastifyInstance) => {
-  app.withTypeProvider<ZodTypeProvider>().get(
+  const typedApp = app.withTypeProvider<ZodTypeProvider>();
+
+  typedApp.get(
     '/health/readiness',
     {
       schema: { response: { 200: z.object({ message: z.string() }), ...standardResponseSchema } },
     },
     async (_, reply) => {
-      const isReady = await readiness.isReady();
+      const isReady = await readiness.isReady(typedApp.diContainer);
       if (!isReady) {
         return reply
           .code(503)

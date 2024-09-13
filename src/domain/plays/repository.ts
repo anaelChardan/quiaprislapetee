@@ -1,16 +1,8 @@
-import { Result } from '@utils/general-type-helpers/Result';
-import { Play, PlayId } from './aggregate';
-
-type SuccessSave = {
-  id: PlayId;
-};
-
-type FailureSave = {
-  reason: string;
-  error: unknown;
-};
+import { DomainRepository } from '@utils/abstractions/domain-repository';
+import { Play } from './aggregate';
 
 export interface PlaysRepository {
-  save(play: Play): Promise<Result<FailureSave, SuccessSave>>;
-  exists(playId: PlayId): Promise<Result<{ reason: string; error: unknown }, boolean>>;
+  save: DomainRepository<Play['_id'], Play>['save'];
+  upsert: DomainRepository<Play['_id'], Play>['upsert'];
+  exists: DomainRepository<Play['_id'], Play>['exists'];
 }

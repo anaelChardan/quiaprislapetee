@@ -6,7 +6,7 @@ import { exitGracefully } from '@utils/exit-gracefully';
 
 import loggerModule from '@utils/logger';
 import { app } from '@infrastructure/http/web';
-import { setupContainer } from './container';
+import { setupFastifyContainer } from '@infrastructure/http/container';
 
 // set the default app port to be greater than 1024 to ensure that the container
 // doesn't run as root-user
@@ -17,8 +17,8 @@ const { logger } = loggerModule;
 
 // Setup server
 (async () => {
+  const container = setupFastifyContainer();
   try {
-    const container = setupContainer();
     await container.cradle.mongoDbClient.db();
   } catch (error: unknown) {
     logger.error('Error while connecting to the database', { error });
@@ -56,7 +56,7 @@ const { logger } = loggerModule;
     }
     terminationSignaled = true;
 
-    exitGracefully(app, event, exitCode ?? 0, error);
+    exitGracefully(app, event, container, exitCode ?? 0, error);
   };
 
   process.on('SIGTERM', () => handleShutdown('SIGTERM'));

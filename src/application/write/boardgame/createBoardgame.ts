@@ -10,6 +10,7 @@ import * as R from '@utils/general-type-helpers/Result';
 export const createBoardgameCommandPayloadSchema = z.object({
   id: z.string(),
   name: z.string(),
+  bggThingId: z.string().optional(),
 });
 
 const createBoardgameCommandSchema = z.object({
@@ -18,23 +19,25 @@ const createBoardgameCommandSchema = z.object({
   payload: createBoardgameCommandPayloadSchema,
 });
 
-export type CreateBoardgame = z.infer<typeof createBoardgameCommandSchema>;
+export type CreateBoardgameCommand = z.infer<typeof createBoardgameCommandSchema>;
 
 export class CreateBoardgameCommandHandler {
   constructor(private readonly boardgamesRepository: BoardgamesRepository) {}
 
   async handle(
-    command: CreateBoardgame,
+    command: CreateBoardgameCommand,
   ): Promise<R.Result<{ error: unknown }, { id: BoardgameId }>> {
     const boardGameId = newBoardGameId(command.payload.id);
     const boardgameName = newBoardGameName(command.payload.name);
 
     const boardGame = {
-      id: boardGameId,
+      _id: boardGameId,
       name: boardgameName,
+      bggThingId: command.payload.bggThingId,
     };
 
     const result = await this.boardgamesRepository.save(boardGame);
-    return result;
+
+    return R.map(result, ({ _id }) => ({ id: _id }));
   }
 }

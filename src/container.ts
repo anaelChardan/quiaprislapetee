@@ -1,67 +1,73 @@
 import * as awilix from 'awilix';
-import { diContainerClassic } from '@fastify/awilix';
 
-import { type BoardgamesRepository } from '@domain/boardgames';
-import { PlayersRepository } from '@domain/players';
+import { Boardgame, type BoardgamesRepository } from '@domain/boardgames';
+import { Player, PlayersRepository } from '@domain/players';
 import { type PlaysRepository } from '@domain/plays';
 import { CreatePlayCommandHandler } from '@application/write/play/create-play';
 import { MongoDbClient } from '@infrastructure/database/mongodb';
 import { CreateBoardgameCommandHandler } from '@application/write/boardgame/createBoardgame';
-import { InMemoryBoardgamesRepository } from '@infrastructure/database/boardgames/boardgames-repository.in-memory';
-import { InMemoryPlayersRepository } from '@infrastructure/database/players/repository/player-repository.in-memory';
 import { MongoPlayersRepository } from '@infrastructure/database/players/repository/player-repository.mongo';
-import { InMemoryPlaysRepository } from '@infrastructure/database/plays/plays-repository.in-memory';
+import { createInMemoryRepository } from '@utils/abstractions/inMemoryRepository';
+import { DummyPlayer } from './__tests__/dummy/dummy-player';
+import { DummyBoardgame } from './__tests__/dummy/dummy-boardgame';
+import { DummyCreator } from './__tests__/dummy/type';
 
-declare module '@fastify/awilix' {
-  interface Cradle {
-    playsRepository: PlaysRepository;
-    boardgamesRepository: BoardgamesRepository;
-    playersRepository: PlayersRepository;
-    createPlayCommandHandler: CreatePlayCommandHandler;
-    createBoardgameCommandHandler: CreateBoardgameCommandHandler;
-    DATABASE_URL: string;
-    mongoDbClient: MongoDbClient;
-  }
-  interface RequestCradle {}
-}
+export type Container = {
+  playsRepository: PlaysRepository;
+  boardgamesRepository: BoardgamesRepository;
+  playersRepository: PlayersRepository;
+  createPlayCommandHandler: CreatePlayCommandHandler;
+  createBoardgameCommandHandler: CreateBoardgameCommandHandler;
+  DATABASE_URL: string;
+  mongoDbClient: MongoDbClient;
+  dummyPlayer: DummyCreator<Player>;
+  dummyBoardgame: DummyCreator<Boardgame>;
+};
+
+export type AppContainer = awilix.AwilixContainer<Container>;
 
 export function shouldBeInMemory() {
   if (process.env.NODE_ENV === 'test') {
     if ('TEST_ENV' in global) {
-      return global.TEST_ENV === 'unit' || global.TEST_ENV === 'acceptance';
+      return global.TEST_ENV === 'unit' || global.TEST_ENV === 'acceptance-in-memory';
     }
   }
   return false;
 }
 
-export function setupContainer() {
-  const common = {
-    DATABASE_URL: awilix.asValue<string>(process.env.DATABASE_URL ?? ''),
-    mongoDbClient: awilix.asClass(MongoDbClient, { lifetime: awilix.Lifetime.SINGLETON }),
-  };
-  if (shouldBeInMemory()) {
-    diContainerClassic.register({
-      playsRepository: awilix.asClass(InMemoryPlaysRepository),
-      boardgamesRepository: awilix.asClass(InMemoryBoardgamesRepository),
-      playersRepository: awilix.asClass(InMemoryPlayersRepository),
-      createPlayCommandHandler: awilix.asClass(CreatePlayCommandHandler),
-      createBoardgameCommandHandler: awilix.asClass(CreateBoardgameCommandHandler),
-      ...common,
-    });
+export type Config = {
+  DATABASE_URL: string;
+};
 
-    return diContainerClassic;
-  }
-
-  diContainerClassic.register({
-    playsRepository: awilix.asClass(InMemoryPlaysRepository),
-    boardgamesRepository: awilix.asClass(InMemoryBoardgamesRepository),
-    playersRepository: awilix.asClass(MongoPlayersRepository),
-    createPlayCommandHandler: awilix.asClass(CreatePlayCommandHandler),
-    createBoardgameCommandHandler: awilix.asClass(CreateBoardgameCommandHandler),
-    ...common,
+export function setupContainer(overridingVariables?: Config): awilix.AwilixContainer<Container> {
+  const container = awilix.createContainer<Container>({
+    injectionMode: 'CLASSIC',
   });
 
-  return diContainerClassic;
-}
+  const inMemoryRegistrations = {
+    DATABASE_URL: awilix.asValue<string>(
+      overridingVariables?.DATABASE_URL ?? process.env.DATABASE_URL ?? '',
+    ),
+    mongoDbClient: awilix.asClass(MongoDbClient, { lifetime: awilix.Lifetime.SINGLETON }),
+    playsRepository: awilix.asFunction(() => createInMemoryRepository('plays')),
+    boardgamesRepository: awilix.asFunction(() => createInMemoryRepository('boardgames')),
+    playersRepository: awilix.asFunction(() => createInMemoryRepository('players')),
+    createPlayCommandHandler: awilix.asClass(CreatePlayCommandHandler),
+    createBoardgameCommandHandler: awilix.asClass(CreateBoardgameCommandHandler),
+    dummyBoardgame: awilix.asClass(DummyBoardgame),
+    dummyPlayer: awilix.asClass(DummyPlayer),
+  };
 
-export { diContainerClassic as container };
+  if (shouldBeInMemory()) {
+    container.register(inMemoryRegistrations);
+
+    return container;
+  }
+
+  container.register({
+    ...inMemoryRegistrations,
+    playersRepository: awilix.asClass(MongoPlayersRepository),
+  });
+
+  return container;
+}
