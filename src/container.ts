@@ -13,13 +13,13 @@ import { DummyBoardgame } from './__tests__/dummy/dummy-boardgame';
 import { DummyCreator } from './__tests__/dummy/type';
 
 export type Container = {
+  DATABASE_URL: string;
+  mongoDbClient: MongoDbClient;
   playsRepository: PlaysRepository;
   boardgamesRepository: BoardgamesRepository;
   playersRepository: PlayersRepository;
   createPlayCommandHandler: CreatePlayCommandHandler;
   createBoardgameCommandHandler: CreateBoardgameCommandHandler;
-  DATABASE_URL: string;
-  mongoDbClient: MongoDbClient;
   dummyPlayer: DummyCreator<Player>;
   dummyBoardgame: DummyCreator<Boardgame>;
 };
@@ -27,11 +27,10 @@ export type Container = {
 export type AppContainer = awilix.AwilixContainer<Container>;
 
 export function shouldBeInMemory() {
-  if (process.env.NODE_ENV === 'test') {
-    if ('TEST_ENV' in global) {
-      return global.TEST_ENV === 'unit' || global.TEST_ENV === 'acceptance-in-memory';
-    }
+  if ('IN_MEMORY' in global) {
+    return global.IN_MEMORY;
   }
+
   return false;
 }
 
@@ -42,13 +41,10 @@ export type Config = {
 export function setupContainer(overridingVariables?: Config): awilix.AwilixContainer<Container> {
   const container = awilix.createContainer<Container>({
     injectionMode: 'CLASSIC',
+    strict: true,
   });
 
   const inMemoryRegistrations = {
-    DATABASE_URL: awilix.asValue<string>(
-      overridingVariables?.DATABASE_URL ?? process.env.DATABASE_URL ?? '',
-    ),
-    mongoDbClient: awilix.asClass(MongoDbClient, { lifetime: awilix.Lifetime.SINGLETON }),
     playsRepository: awilix.asFunction(() => createInMemoryRepository('plays')),
     boardgamesRepository: awilix.asFunction(() => createInMemoryRepository('boardgames')),
     playersRepository: awilix.asFunction(() => createInMemoryRepository('players')),
@@ -66,6 +62,13 @@ export function setupContainer(overridingVariables?: Config): awilix.AwilixConta
 
   container.register({
     ...inMemoryRegistrations,
+    DATABASE_URL: awilix.asValue<string>(
+      overridingVariables?.DATABASE_URL ?? process.env.DATABASE_URL ?? '',
+    ),
+    mongoDbClient: awilix.asClass(MongoDbClient, {
+      lifetime: awilix.Lifetime.SINGLETON,
+      dispose: (client) => client.close(),
+    }),
     playersRepository: awilix.asClass(MongoPlayersRepository),
   });
 

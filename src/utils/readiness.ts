@@ -1,11 +1,11 @@
 import loggerModule from '@utils/logger';
-import { type AppContainer } from '../container';
+import { Container } from '../container';
 
 const { logger } = loggerModule;
 
-const isReady = async (appContainer: AppContainer) => {
+const isReady = async (appContainer: Container) => {
   try {
-    const { mongoDbClient } = appContainer.cradle;
+    const { mongoDbClient } = appContainer;
     await mongoDbClient.ping();
   } catch (error: unknown) {
     logger.error('Error while connecting to the database', { error });
@@ -18,7 +18,7 @@ const isReady = async (appContainer: AppContainer) => {
 let isShuttingDown = false;
 
 export default {
-  isReady: async (appContainer: AppContainer) => !isShuttingDown && (await isReady(appContainer)),
+  isReady: async (appContainer: Container) => !isShuttingDown && (await isReady(appContainer)),
   setShuttingDown: () => {
     isShuttingDown = true;
   },

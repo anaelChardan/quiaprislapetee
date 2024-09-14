@@ -47,45 +47,40 @@ module.exports = {
       ...baseConfig,
       displayName: 'unit-tests',
       testMatch: ['<rootDir>/src/**/*.unit.test.ts'],
-      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
       globals: {
-        TEST_ENV: 'unit',
+        IN_MEMORY: true,
       },
     },
     {
       ...baseConfig,
       displayName: 'service-tests',
       testMatch: ['<rootDir>/src/**/*.service.test.ts'],
-      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
       globals: {
-        TEST_ENV: 'service',
+        IN_MEMORY: true,
       },
     },
     {
       ...baseConfig,
       displayName: 'acceptance-tests-in-memory',
       testMatch: ['<rootDir>/src/**/*.acceptance.test.ts'],
-      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
       globals: {
-        TEST_ENV: 'acceptance-in-memory',
+        IN_MEMORY: true
       },
     },
     {
       ...baseConfig,
       displayName: 'acceptance-tests-prod-ready',
       testMatch: ['<rootDir>/src/**/*.acceptance.test.ts'],
-      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
       globals: {
-        TEST_ENV: 'acceptance-prod-ready',
+        IN_MEMORY: false,
       },
     },
     {
       ...baseConfig,
       displayName: 'integration-tests',
       testMatch: ['<rootDir>/src/**/*.integration.test.ts'],
-      setupFilesAfterEnv: ['<rootDir>/src/__tests__/teardown.ts'],
       globals: {
-        TEST_ENV: 'integration',
+        IN_MEMORY: false,
       },
     },
   ],

@@ -13,7 +13,7 @@ export default async (app: FastifyInstance) => {
       schema: { response: { 200: z.object({ message: z.string() }), ...standardResponseSchema } },
     },
     async (_, reply) => {
-      const isReady = await readiness.isReady(typedApp.diContainer);
+      const isReady = await readiness.isReady(typedApp.diContainer.cradle);
       if (!isReady) {
         return reply
           .code(503)

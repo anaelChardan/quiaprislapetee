@@ -8,8 +8,10 @@ type CloseableServer = {
 };
 
 async function shutdownDependencies(server: CloseableServer, container: AppContainer) {
-  const dependencies = new Map<string, () => Promise<void>>([['server', server.close]]);
-  dependencies.set('mongo', container.cradle.mongoDbClient.close);
+  const dependencies = new Map<string, () => Promise<void>>([
+    ['server', server.close],
+    ['container', container.dispose],
+  ]);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const [name, shutdown] of dependencies) {

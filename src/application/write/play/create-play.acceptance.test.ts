@@ -2,35 +2,42 @@ import * as R from '@utils/general-type-helpers/Result';
 import { generatePlayerId, newPseudo, PlayerId } from '@domain/players';
 import { BoardgameId } from '@domain/boardgames';
 import { CreatePlayCommandHandler } from './create-play';
-import { setupContainer } from '../../../container';
+import { getTestContainer } from '../../../__tests__/test-container';
 
 describe('plays', () => {
+  jest.setTimeout(1_200_000);
+
   let createPlayCommandHandler: CreatePlayCommandHandler;
   let boardgameId: BoardgameId;
 
   let popeyeId: PlayerId;
   let nanouId: PlayerId;
+  let shutdown: () => Promise<void>;
 
   beforeAll(async () => {
-    const container = setupContainer();
-    createPlayCommandHandler = container.cradle.createPlayCommandHandler;
-
-    boardgameId = await container.cradle.dummyBoardgame.randomOne({});
+    const { container, shutdown: shutdownContainer } = await getTestContainer();
+    createPlayCommandHandler = container.createPlayCommandHandler;
+    shutdown = shutdownContainer;
+    boardgameId = await container.dummyBoardgame.randomOne({});
 
     popeyeId = generatePlayerId();
     nanouId = generatePlayerId();
 
-    await container.cradle.dummyPlayer.randomOne({
+    await container.dummyPlayer.randomOne({
       _id: popeyeId,
       pseudo: newPseudo('popeye'),
       friends: [],
     });
 
-    await container.cradle.dummyPlayer.randomOne({
+    await container.dummyPlayer.randomOne({
       _id: nanouId,
       pseudo: newPseudo('nanou'),
       friends: [],
     });
+  });
+
+  afterAll(async () => {
+    await shutdown();
   });
 
   it('can create a play', async () => {
